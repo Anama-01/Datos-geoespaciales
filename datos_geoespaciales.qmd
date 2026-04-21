@@ -1,0 +1,179 @@
+---
+title: "Estructuras de datos geoespaciales"
+author: "Anamaria Rodríguez Ramirez"
+date: April, 2026
+format:
+  html:
+    toc: true
+    number-sections: true
+    theme: cosmo
+  pdf:
+    toc: true
+    toc-title: "Contenido"
+    number-sections: true
+    documentclass: scrreprt
+    geometry:
+      - top=25mm
+      - left=25mm
+      - right=25mm
+      - bottom=25mm
+    # Archivo BibTeX con todas las referencias
+---
+
+```{r}
+# #| include: false
+source("/home/rstudio/work/ejercicios/datos_geoespaciales/j_eval_j_plot-previa4.r")
+```
+
+Los siguientes ejercicios fueron desarrollados en base al capítulo Estructura de Datos Geoespaciales del curso Programación en SIG: R, Python y Julia, creado por el docente Rodriguez-Avellaneda, 2026. El objetivo es que puedas practicar la creación de objetos geométricos básicos (Puntos, Líneas, Polígonos) y la conversión de tablas planas a tablas espaciales con un sistema de referencia.
+
+# Ejercicio 1: Topología del Río Cauca (Líneas y Puntos)
+
+**Contexto:** Estás analizando estaciones de monitoreo de calidad del agua sobre un tramo del Río Cauca. Tienes las coordenadas de las estaciones y necesitas construir los objetos geométricos individuales para luego incluirlos en tu reporte base.
+
+Instrucciones de código:
+
+    1. Utilizando las herramientas de creación de geometrías nativas de tu lenguaje, crea un Punto que represente la Estación Juanchito (Coordenadas aproximadas: Lon: -76.45, Lat: 3.45). Guárdalo en la variable pt_juanchito.
+    2. Crea un segundo Punto para la Estación Mediacanoa (Lon: -76.38, Lat: 3.88). Guárdalo en la variable pt_mediacanoa.
+    3. Imagina que el río conecta ambos puntos en línea recta. Crea una geometría tipo Línea (LineString) que una la coordenada de Juanchito con la de Mediacanoa. Guárdalo en la variable tramo_cauca.
+    4. Imprime el tipo de geometría (o la representación en texto/WKT) de tu variable tramo_cauca.
+
+## Lenguaje Python
+```{python}
+import geopandas as gpd
+from shapely.geometry import Point, LineString
+
+pt_juanchito = Point(-76.45, 3.45)
+pt_mediacanoa = Point(-76.38, 3.88)
+
+tramo_cauca = LineString([pt_juanchito, pt_mediacanoa])
+
+print(f"Tipo de geometría: {tramo_cauca.geom_type}")
+print(f"Representación WKT: {tramo_cauca}")
+```
+
+## Lenguaje R 
+
+```{r}
+library(sf) 
+library(sfheaders)
+
+pt_juanchito <- st_point(c(-76.45, 3.45))
+pt_mediacanoa <- st_point(c(-76.38, 3.88))
+
+tramo_cauca <- st_linestring(rbind(st_coordinates(pt_juanchito), st_coordinates(pt_mediacanoa)))
+
+print(paste("Tipo de geometría:", st_geometry_type(tramo_cauca)))
+print(paste("Representación WKT:", st_as_text(tramo_cauca)))
+```
+
+## Lenguaje Julia
+
+```{r}
+j_eval(r"-(
+
+using LibGEOS
+
+pt_juanchito = LibGEOS.readgeom("POINT(-76.45 3.45)")
+pt_mediacanoa = LibGEOS.readgeom("POINT(-76.38 3.88)")
+
+tramo_cauca = LibGEOS.readgeom("LINESTRING(-76.45 3.45, -76.38 3.88)")
+
+using Printf
+
+println("Tipo de geometría: $(LibGEOS.geomTypeId(tramo_cauca))")
+println("Representación WKT: $tramo_cauca")
+
+)-")
+```
+
+En Julia, se imprime en el tipo de geometría como un número entero, donde `0` corresponde a `Point`, `1` a `LineString`, y así sucesivamente. En este caso, el resultado será `1`, indicando que la geometría es un `LineString`, debido a que esta libreria está escrito en C++, por lo empieza su conteo desde `0` y no desde `1` como en R o Julia.
+
+## Ejercicio 2
+
+**Contexto:** El equipo de Gestión del Riesgo te ha entregado un archivo tabular tradicional (CSV) con los barrios que reportan riesgo de inundación y sus coordenadas. Tu misión es convertir esta tabla “plana” en un objeto espacial oficial con un sistema de referencia.
+
+Instrucciones de código:
+
+    1. Crea un DataFrame clásico con la siguiente información:
+        - Columna Barrio: “La Virginia”, “Puerto Mallarino”
+        - Columna Riesgo: “Alto”, “Medio”
+        - Columna Lon: -75.88, -76.21
+        - Columna Lat: 4.90, 3.95
+    2. Utiliza la función apropiada de tu librería espacial (GeoPandas, sf o GeoTables) para convertir ese DataFrame en una Tabla Espacial. Asegúrate de mapear las columnas Lon y Lat como las geometrías.
+    3. Al realizar la conversión, asigna explícitamente el sistema de coordenadas geográficas estándar (WGS84), es decir, el código EPSG:4326.
+    4. Imprime en consola tu nueva tabla espacial.
+
+## Lenguaje Python
+
+```{python}
+
+import pandas as pd
+import geopandas as gpd
+from shapely.geometry import Point
+
+df = pd.DataFrame({
+    "Barrio": ["La Virginia", "Puerto Mallarino"],
+    "Riesgo": ["Alto", "Medio"],
+    "Lon": [-75.88, -76.21],
+    "Lat": [4.90, 3.95]
+})
+
+geoms = [Point(xy) for xy in zip(df["Lon"], df["Lat"])]
+
+gdf = gpd.GeoDataFrame(df, geometry=geoms, crs="EPSG:4326")
+
+print(gdf)
+```
+
+## Lenguaje R
+
+```{r}
+library(sf)
+
+df <- data.frame(
+  Barrio = c("La Virginia", "Puerto Mallarino"),
+  Riesgo = c("Alto", "Medio"),
+  Lon = c(-75.88, -76.21),
+  Lat = c(4.90, 3.95)
+)
+
+gdf <- st_as_sf(df, coords = c("Lon", "Lat"), crs = 4326)
+print(gdf)
+```
+
+## Lenguaje Julia
+
+```{r}
+j_eval(r"-(
+
+using DataFrames, GeoTables, Meshes
+
+df = DataFrame(
+    Barrio = ["La Virginia", "Puerto Mallarino"],
+    Riesgo = ["Alto", "Medio"],
+    Lon = [-75.88, -76.21],
+    Lat = [4.90, 3.95] )
+
+puntos = [Meshes.Point(df.Lon[i], df.Lat[i]) for i in 1:nrow(df)]
+
+gt = georef(df, puntos)
+println(gt)
+
+)-")
+```
+
+# Entregables y Criterios de Evaluación
+    **Sobre la Topología (Ejercicio 1):** Basado en la lectura y tu experiencia práctica, ¿por qué es crítico respetar el orden matemático (X, Y) o (Longitud, Latitud) al momento de construir un Point o LineString en lugar de usar el orden verbal cotidiano “Latitud, Longitud”?
+
+Es importante respetar el orden (Longitud, Latitud) porque las libreiras y el tipo de formato utilizado, operan sobre un plano cartesiano, es decir coordenadas (X,Y). Si se interpretara cómo suele mencionarse las coordenadas, (Latitud, Longitud) otra manera, el lenguaje interpretaria la Latitud como Longitud y viceversa por lo que el punto estaría ubicado en un lugar completamente distinto al que se esperaria. 
+
+Además, X, es el eje horizontal, que corresponde a la longitud que va de este a oeste, mientras que Y es el eje vertical, que corresponde a la latitud que va de norte a sur. Si se invierte el orden, se estaría asignando la latitud al eje X y la longitud al eje Y, lo que resultaría en una ubicación geográfica incorrecta.
+
+    **Sobre la Proyección:** El texto de la lección hace una advertencia sobre calcular áreas usando el EPSG:4326 (Grados). Explica con tus palabras por qué medir un área en “grados cuadrados” carece de utilidad práctica en la ingeniería o el planeamiento territorial en Colombia, y por qué el EPSG:9377 soluciona esto.
+
+Porque no es una medida que permita determinar distancias, las coordenadas de referencia en formato EPSG:4326, al encontrarse en grados no permite tener un dato de distancia entre dos puntos, sino que al ser una medida que corresponde a una unidad que calcula el ángulo de un vértica entre el centro y sus lados, el resultado sería un ángulo, no una distancia. Por otra parte, el formato EPSG:9377 (Magna-Sirgas/Origen Nacional), es un sistema de coordenadas proyectado que utiliza metros como unidad de medida, lo que permite calcular áreas y distancias de manera precisa y útil para la ingeniería y el planeamiento territorial en Colombia.
+
+# Referencias
+
+Rodríguez-Avellaneda, A. H. (2026). Programación en SIG: R, Python y Julia [Material de curso]. Maestría en Geomática, Universidad Nacional de Colombia. Recuperado de https://github.com/alexyshr/ProgramacionSIG2026

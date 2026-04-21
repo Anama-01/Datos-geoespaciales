@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.550">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Anamaria Rodríguez Ramirez">
+<meta name="dcterms.date" content="2026-04-01">
+
+<title>Estructuras de datos geoespaciales</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="datos_geoespaciales_files/libs/clipboard/clipboard.min.js"></script>
+<script src="datos_geoespaciales_files/libs/quarto-html/quarto.js"></script>
+<script src="datos_geoespaciales_files/libs/quarto-html/popper.min.js"></script>
+<script src="datos_geoespaciales_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="datos_geoespaciales_files/libs/quarto-html/anchor.min.js"></script>
+<link href="datos_geoespaciales_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="datos_geoespaciales_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="datos_geoespaciales_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="datos_geoespaciales_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="datos_geoespaciales_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#ejercicio-1-topología-del-río-cauca-líneas-y-puntos" id="toc-ejercicio-1-topología-del-río-cauca-líneas-y-puntos" class="nav-link active" data-scroll-target="#ejercicio-1-topología-del-río-cauca-líneas-y-puntos"><span class="header-section-number">1</span> Ejercicio 1: Topología del Río Cauca (Líneas y Puntos)</a>
+  <ul class="collapse">
+  <li><a href="#lenguaje-python" id="toc-lenguaje-python" class="nav-link" data-scroll-target="#lenguaje-python"><span class="header-section-number">1.1</span> Lenguaje Python</a></li>
+  <li><a href="#lenguaje-r" id="toc-lenguaje-r" class="nav-link" data-scroll-target="#lenguaje-r"><span class="header-section-number">1.2</span> Lenguaje R</a></li>
+  <li><a href="#lenguaje-julia" id="toc-lenguaje-julia" class="nav-link" data-scroll-target="#lenguaje-julia"><span class="header-section-number">1.3</span> Lenguaje Julia</a></li>
+  <li><a href="#ejercicio-2" id="toc-ejercicio-2" class="nav-link" data-scroll-target="#ejercicio-2"><span class="header-section-number">1.4</span> Ejercicio 2</a></li>
+  <li><a href="#lenguaje-python-1" id="toc-lenguaje-python-1" class="nav-link" data-scroll-target="#lenguaje-python-1"><span class="header-section-number">1.5</span> Lenguaje Python</a></li>
+  <li><a href="#lenguaje-r-1" id="toc-lenguaje-r-1" class="nav-link" data-scroll-target="#lenguaje-r-1"><span class="header-section-number">1.6</span> Lenguaje R</a></li>
+  <li><a href="#lenguaje-julia-1" id="toc-lenguaje-julia-1" class="nav-link" data-scroll-target="#lenguaje-julia-1"><span class="header-section-number">1.7</span> Lenguaje Julia</a></li>
+  </ul></li>
+  <li><a href="#entregables-y-criterios-de-evaluación" id="toc-entregables-y-criterios-de-evaluación" class="nav-link" data-scroll-target="#entregables-y-criterios-de-evaluación"><span class="header-section-number">2</span> Entregables y Criterios de Evaluación</a></li>
+  <li><a href="#referencias" id="toc-referencias" class="nav-link" data-scroll-target="#referencias"><span class="header-section-number">3</span> Referencias</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="../../datos_geoespaciales.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Estructuras de datos geoespaciales</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Anamaria Rodríguez Ramirez </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 1, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># #| include: false</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"/home/rstudio/work/ejercicios/datos_geoespaciales/j_eval_j_plot-previa4.r"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Los siguientes ejercicios fueron desarrollados en base al capítulo Estructura de Datos Geoespaciales del curso Programación en SIG: R, Python y Julia, creado por el docente Rodriguez-Avellaneda, 2026. El objetivo es que puedas practicar la creación de objetos geométricos básicos (Puntos, Líneas, Polígonos) y la conversión de tablas planas a tablas espaciales con un sistema de referencia.</p>
+<section id="ejercicio-1-topología-del-río-cauca-líneas-y-puntos" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Ejercicio 1: Topología del Río Cauca (Líneas y Puntos)</h1>
+<p><strong>Contexto:</strong> Estás analizando estaciones de monitoreo de calidad del agua sobre un tramo del Río Cauca. Tienes las coordenadas de las estaciones y necesitas construir los objetos geométricos individuales para luego incluirlos en tu reporte base.</p>
+<p>Instrucciones de código:</p>
+<pre><code>1. Utilizando las herramientas de creación de geometrías nativas de tu lenguaje, crea un Punto que represente la Estación Juanchito (Coordenadas aproximadas: Lon: -76.45, Lat: 3.45). Guárdalo en la variable pt_juanchito.
+2. Crea un segundo Punto para la Estación Mediacanoa (Lon: -76.38, Lat: 3.88). Guárdalo en la variable pt_mediacanoa.
+3. Imagina que el río conecta ambos puntos en línea recta. Crea una geometría tipo Línea (LineString) que una la coordenada de Juanchito con la de Mediacanoa. Guárdalo en la variable tramo_cauca.
+4. Imprime el tipo de geometría (o la representación en texto/WKT) de tu variable tramo_cauca.</code></pre>
+<section id="lenguaje-python" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="lenguaje-python"><span class="header-section-number">1.1</span> Lenguaje Python</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geopandas <span class="im">as</span> gpd</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> shapely.geometry <span class="im">import</span> Point, LineString</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>pt_juanchito <span class="op">=</span> Point(<span class="op">-</span><span class="fl">76.45</span>, <span class="fl">3.45</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>pt_mediacanoa <span class="op">=</span> Point(<span class="op">-</span><span class="fl">76.38</span>, <span class="fl">3.88</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>tramo_cauca <span class="op">=</span> LineString([pt_juanchito, pt_mediacanoa])</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Tipo de geometría: </span><span class="sc">{</span>tramo_cauca<span class="sc">.</span>geom_type<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Tipo de geometría: LineString</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Representación WKT: </span><span class="sc">{</span>tramo_cauca<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Representación WKT: LINESTRING (-76.45 3.45, -76.38 3.88)</code></pre>
+</div>
+</div>
+</section>
+<section id="lenguaje-r" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="lenguaje-r"><span class="header-section-number">1.2</span> Lenguaje R</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Linking to GEOS 3.12.1, GDAL 3.8.4, PROJ 9.4.0; sf_use_s2() is TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sfheaders)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>pt_juanchito <span class="ot">&lt;-</span> <span class="fu">st_point</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="fl">76.45</span>, <span class="fl">3.45</span>))</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>pt_mediacanoa <span class="ot">&lt;-</span> <span class="fu">st_point</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="fl">76.38</span>, <span class="fl">3.88</span>))</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>tramo_cauca <span class="ot">&lt;-</span> <span class="fu">st_linestring</span>(<span class="fu">rbind</span>(<span class="fu">st_coordinates</span>(pt_juanchito), <span class="fu">st_coordinates</span>(pt_mediacanoa)))</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Tipo de geometría:"</span>, <span class="fu">st_geometry_type</span>(tramo_cauca)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Tipo de geometría: LINESTRING"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Representación WKT:"</span>, <span class="fu">st_as_text</span>(tramo_cauca)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Representación WKT: LINESTRING (-76.45 3.45, -76.38 3.88)"</code></pre>
+</div>
+</div>
+</section>
+<section id="lenguaje-julia" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="lenguaje-julia"><span class="header-section-number">1.3</span> Lenguaje Julia</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">j_eval</span>(r<span class="st">"-(</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="st">using LibGEOS</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="st">pt_juanchito = LibGEOS.readgeom("</span><span class="fu">POINT</span>(<span class="sc">-</span><span class="fl">76.45</span> <span class="fl">3.45</span>)<span class="st">")</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="st">pt_mediacanoa = LibGEOS.readgeom("</span><span class="fu">POINT</span>(<span class="sc">-</span><span class="fl">76.38</span> <span class="fl">3.88</span>)<span class="st">")</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="st">tramo_cauca = LibGEOS.readgeom("</span><span class="fu">LINESTRING</span>(<span class="sc">-</span><span class="fl">76.45</span> <span class="fl">3.45</span>, <span class="sc">-</span><span class="fl">76.38</span> <span class="fl">3.88</span>)<span class="st">")</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="st">using Printf</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="st">println("</span>Tipo de geometría<span class="sc">:</span> <span class="er">$</span>(<span class="fu">LibGEOS.geomTypeId</span>(tramo_cauca))<span class="st">")</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="st">println("</span>Representación WKT<span class="sc">:</span> <span class="er">$</span>tramo_cauca<span class="st">")</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="st">)-"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Starting Julia ...</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;pre class='julia-code' style='display:block; background:#f4f6f8; border:1px solid #c0c8d0; border-radius:4px; padding:10px; margin-top:10px; margin-bottom:0; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#333;'&gt;
+&lt;span style='color:#28a745; font-weight:bold;'&gt;julia&amp;gt; &lt;/span&gt;&lt;span style='color:#008b8b;'&gt;using LibGEOS&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class='julia-output' style='display:block; background:#ffffff; border:none; padding:10px 10px 10px 20px; margin-top:0; margin-bottom:15px; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#000;'&gt;
+
+&lt;/pre&gt;
+&lt;pre class='julia-code' style='display:block; background:#f4f6f8; border:1px solid #c0c8d0; border-radius:4px; padding:10px; margin-top:10px; margin-bottom:0; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#333;'&gt;
+&lt;span style='color:#28a745; font-weight:bold;'&gt;julia&amp;gt; &lt;/span&gt;&lt;span style='color:#008b8b;'&gt;pt_juanchito = LibGEOS.readgeom("POINT(-76.45 3.45)")&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class='julia-output' style='display:block; background:#ffffff; border:none; padding:10px 10px 10px 20px; margin-top:0; margin-bottom:15px; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#000;'&gt;
+POINT (-76.45 3.45)
+
+&lt;/pre&gt;
+&lt;pre class='julia-code' style='display:block; background:#f4f6f8; border:1px solid #c0c8d0; border-radius:4px; padding:10px; margin-top:10px; margin-bottom:0; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#333;'&gt;
+&lt;span style='color:#28a745; font-weight:bold;'&gt;julia&amp;gt; &lt;/span&gt;&lt;span style='color:#008b8b;'&gt;pt_mediacanoa = LibGEOS.readgeom("POINT(-76.38 3.88)")&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class='julia-output' style='display:block; background:#ffffff; border:none; padding:10px 10px 10px 20px; margin-top:0; margin-bottom:15px; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#000;'&gt;
+POINT (-76.38 3.88)
+
+&lt;/pre&gt;
+&lt;pre class='julia-code' style='display:block; background:#f4f6f8; border:1px solid #c0c8d0; border-radius:4px; padding:10px; margin-top:10px; margin-bottom:0; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#333;'&gt;
+&lt;span style='color:#28a745; font-weight:bold;'&gt;julia&amp;gt; &lt;/span&gt;&lt;span style='color:#008b8b;'&gt;tramo_cauca = LibGEOS.readgeom("LINESTRING(-76.45 3.45, -76.38 3.88)")&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class='julia-output' style='display:block; background:#ffffff; border:none; padding:10px 10px 10px 20px; margin-top:0; margin-bottom:15px; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#000;'&gt;
+LINESTRING (-76.45 3.45, -76.38 3.88)
+
+&lt;/pre&gt;
+&lt;pre class='julia-code' style='display:block; background:#f4f6f8; border:1px solid #c0c8d0; border-radius:4px; padding:10px; margin-top:10px; margin-bottom:0; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#333;'&gt;
+&lt;span style='color:#28a745; font-weight:bold;'&gt;julia&amp;gt; &lt;/span&gt;&lt;span style='color:#008b8b;'&gt;using Printf&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class='julia-output' style='display:block; background:#ffffff; border:none; padding:10px 10px 10px 20px; margin-top:0; margin-bottom:15px; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#000;'&gt;
+
+&lt;/pre&gt;
+&lt;pre class='julia-code' style='display:block; background:#f4f6f8; border:1px solid #c0c8d0; border-radius:4px; padding:10px; margin-top:10px; margin-bottom:0; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#333;'&gt;
+&lt;span style='color:#28a745; font-weight:bold;'&gt;julia&amp;gt; &lt;/span&gt;&lt;span style='color:#008b8b;'&gt;println("Tipo de geometría: $(LibGEOS.geomTypeId(tramo_cauca))")&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class='julia-output' style='display:block; background:#ffffff; border:none; padding:10px 10px 10px 20px; margin-top:0; margin-bottom:15px; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#000;'&gt;
+Tipo de geometría: 1
+
+&lt;/pre&gt;
+&lt;pre class='julia-code' style='display:block; background:#f4f6f8; border:1px solid #c0c8d0; border-radius:4px; padding:10px; margin-top:10px; margin-bottom:0; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#333;'&gt;
+&lt;span style='color:#28a745; font-weight:bold;'&gt;julia&amp;gt; &lt;/span&gt;&lt;span style='color:#008b8b;'&gt;println("Representación WKT: $tramo_cauca")&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class='julia-output' style='display:block; background:#ffffff; border:none; padding:10px 10px 10px 20px; margin-top:0; margin-bottom:15px; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#000;'&gt;
+Representación WKT: LINESTRING (-76.45 3.45, -76.38 3.88)
+
+&lt;/pre&gt;</code></pre>
+</div>
+</div>
+<p>En Julia, se imprime en el tipo de geometría como un número entero, donde <code>0</code> corresponde a <code>Point</code>, <code>1</code> a <code>LineString</code>, y así sucesivamente. En este caso, el resultado será <code>1</code>, indicando que la geometría es un <code>LineString</code>, debido a que esta libreria está escrito en C++, por lo empieza su conteo desde <code>0</code> y no desde <code>1</code> como en R o Julia.</p>
+</section>
+<section id="ejercicio-2" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="ejercicio-2"><span class="header-section-number">1.4</span> Ejercicio 2</h2>
+<p><strong>Contexto:</strong> El equipo de Gestión del Riesgo te ha entregado un archivo tabular tradicional (CSV) con los barrios que reportan riesgo de inundación y sus coordenadas. Tu misión es convertir esta tabla “plana” en un objeto espacial oficial con un sistema de referencia.</p>
+<p>Instrucciones de código:</p>
+<pre><code>1. Crea un DataFrame clásico con la siguiente información:
+    - Columna Barrio: “La Virginia”, “Puerto Mallarino”
+    - Columna Riesgo: “Alto”, “Medio”
+    - Columna Lon: -75.88, -76.21
+    - Columna Lat: 4.90, 3.95
+2. Utiliza la función apropiada de tu librería espacial (GeoPandas, sf o GeoTables) para convertir ese DataFrame en una Tabla Espacial. Asegúrate de mapear las columnas Lon y Lat como las geometrías.
+3. Al realizar la conversión, asigna explícitamente el sistema de coordenadas geográficas estándar (WGS84), es decir, el código EPSG:4326.
+4. Imprime en consola tu nueva tabla espacial.</code></pre>
+</section>
+<section id="lenguaje-python-1" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="lenguaje-python-1"><span class="header-section-number">1.5</span> Lenguaje Python</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> geopandas <span class="im">as</span> gpd</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> shapely.geometry <span class="im">import</span> Point</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Barrio"</span>: [<span class="st">"La Virginia"</span>, <span class="st">"Puerto Mallarino"</span>],</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Riesgo"</span>: [<span class="st">"Alto"</span>, <span class="st">"Medio"</span>],</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Lon"</span>: [<span class="op">-</span><span class="fl">75.88</span>, <span class="op">-</span><span class="fl">76.21</span>],</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Lat"</span>: [<span class="fl">4.90</span>, <span class="fl">3.95</span>]</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>geoms <span class="op">=</span> [Point(xy) <span class="cf">for</span> xy <span class="kw">in</span> <span class="bu">zip</span>(df[<span class="st">"Lon"</span>], df[<span class="st">"Lat"</span>])]</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>gdf <span class="op">=</span> gpd.GeoDataFrame(df, geometry<span class="op">=</span>geoms, crs<span class="op">=</span><span class="st">"EPSG:4326"</span>)</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(gdf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             Barrio Riesgo    Lon   Lat             geometry
+0       La Virginia   Alto -75.88  4.90   POINT (-75.88 4.9)
+1  Puerto Mallarino  Medio -76.21  3.95  POINT (-76.21 3.95)</code></pre>
+</div>
+</div>
+</section>
+<section id="lenguaje-r-1" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="lenguaje-r-1"><span class="header-section-number">1.6</span> Lenguaje R</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Barrio =</span> <span class="fu">c</span>(<span class="st">"La Virginia"</span>, <span class="st">"Puerto Mallarino"</span>),</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Riesgo =</span> <span class="fu">c</span>(<span class="st">"Alto"</span>, <span class="st">"Medio"</span>),</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Lon =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">75.88</span>, <span class="sc">-</span><span class="fl">76.21</span>),</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Lat =</span> <span class="fu">c</span>(<span class="fl">4.90</span>, <span class="fl">3.95</span>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>gdf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(df, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"Lon"</span>, <span class="st">"Lat"</span>), <span class="at">crs =</span> <span class="dv">4326</span>)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(gdf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 2 features and 2 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: -76.21 ymin: 3.95 xmax: -75.88 ymax: 4.9
+Geodetic CRS:  WGS 84
+            Barrio Riesgo            geometry
+1      La Virginia   Alto  POINT (-75.88 4.9)
+2 Puerto Mallarino  Medio POINT (-76.21 3.95)</code></pre>
+</div>
+</div>
+</section>
+<section id="lenguaje-julia-1" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="lenguaje-julia-1"><span class="header-section-number">1.7</span> Lenguaje Julia</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">j_eval</span>(r<span class="st">"-(</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="st">using DataFrames, GeoTables, Meshes</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="st">df = DataFrame(</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="st">    Barrio = ["</span>La Virginia<span class="st">", "</span>Puerto Mallarino<span class="st">"],</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="st">    Riesgo = ["</span>Alto<span class="st">", "</span>Medio<span class="st">"],</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="st">    Lon = [-75.88, -76.21],</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="st">    Lat = [4.90, 3.95] )</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="st">puntos = [Meshes.Point(df.Lon[i], df.Lat[i]) for i in 1:nrow(df)]</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="st">gt = georef(df, puntos)</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="st">println(gt)</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="st">)-"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;pre class='julia-code' style='display:block; background:#f4f6f8; border:1px solid #c0c8d0; border-radius:4px; padding:10px; margin-top:10px; margin-bottom:0; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#333;'&gt;
+&lt;span style='color:#28a745; font-weight:bold;'&gt;julia&amp;gt; &lt;/span&gt;&lt;span style='color:#008b8b;'&gt;using DataFrames, GeoTables, Meshes&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class='julia-output' style='display:block; background:#ffffff; border:none; padding:10px 10px 10px 20px; margin-top:0; margin-bottom:15px; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#000;'&gt;
+
+&lt;/pre&gt;
+&lt;pre class='julia-code' style='display:block; background:#f4f6f8; border:1px solid #c0c8d0; border-radius:4px; padding:10px; margin-top:10px; margin-bottom:0; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#333;'&gt;
+&lt;span style='color:#28a745; font-weight:bold;'&gt;julia&amp;gt; &lt;/span&gt;&lt;span style='color:#008b8b;'&gt;df = DataFrame(&lt;/span&gt;
+       &lt;span style='color:#008b8b;'&gt;    Barrio = ["La Virginia", "Puerto Mallarino"],&lt;/span&gt;
+       &lt;span style='color:#008b8b;'&gt;    Riesgo = ["Alto", "Medio"],&lt;/span&gt;
+       &lt;span style='color:#008b8b;'&gt;    Lon = [-75.88, -76.21],&lt;/span&gt;
+       &lt;span style='color:#008b8b;'&gt;    Lat = [4.90, 3.95] )&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class='julia-output' style='display:block; background:#ffffff; border:none; padding:10px 10px 10px 20px; margin-top:0; margin-bottom:15px; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#000;'&gt;
+2×4 DataFrame
+ Row │ Barrio            Riesgo  Lon      Lat
+     │ String            String  Float64  Float64
+─────┼────────────────────────────────────────────
+   1 │ La Virginia       Alto     -75.88     4.9
+   2 │ Puerto Mallarino  Medio    -76.21     3.95
+
+&lt;/pre&gt;
+&lt;pre class='julia-code' style='display:block; background:#f4f6f8; border:1px solid #c0c8d0; border-radius:4px; padding:10px; margin-top:10px; margin-bottom:0; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#333;'&gt;
+&lt;span style='color:#28a745; font-weight:bold;'&gt;julia&amp;gt; &lt;/span&gt;&lt;span style='color:#008b8b;'&gt;puntos = [Meshes.Point(df.Lon[i], df.Lat[i]) for i in 1:nrow(df)]&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class='julia-output' style='display:block; background:#ffffff; border:none; padding:10px 10px 10px 20px; margin-top:0; margin-bottom:15px; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#000;'&gt;
+2-element Vector{Meshes.Point{𝔼{2}, CoordRefSystems.Cartesian2D{CoordRefSystems.NoDatum, Unitful.Quantity{Float64, 𝐋, Unitful.FreeUnits{(m,), 𝐋, nothing}}}}}:
+ Point(x: -75.88 m, y: 4.9 m)
+ Point(x: -76.21 m, y: 3.95 m)
+
+&lt;/pre&gt;
+&lt;pre class='julia-code' style='display:block; background:#f4f6f8; border:1px solid #c0c8d0; border-radius:4px; padding:10px; margin-top:10px; margin-bottom:0; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#333;'&gt;
+&lt;span style='color:#28a745; font-weight:bold;'&gt;julia&amp;gt; &lt;/span&gt;&lt;span style='color:#008b8b;'&gt;gt = georef(df, puntos)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class='julia-output' style='display:block; background:#ffffff; border:none; padding:10px 10px 10px 20px; margin-top:0; margin-bottom:15px; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#000;'&gt;
+                          2×5 GeoTable over 2 PointSet
+┌──────────────────┬─────────────┬────────────┬────────────┬────────────────────
+│      Barrio      │   Riesgo    │    Lon     │    Lat     │         geometry  ⋯
+│   Categorical    │ Categorical │ Continuous │ Continuous │          Point    ⋯
+│    [NoUnits]     │  [NoUnits]  │ [NoUnits]  │ [NoUnits]  │   🖈 Cartesian{NoD ⋯
+├──────────────────┼─────────────┼────────────┼────────────┼────────────────────
+│   La Virginia    │    Alto     │   -75.88   │    4.9     │ (x: -75.88 m, y:  ⋯
+│ Puerto Mallarino │    Medio    │   -76.21   │    3.95    │ (x: -76.21 m, y:  ⋯
+└──────────────────┴─────────────┴────────────┴────────────┴────────────────────
+                                                                1 column omitted
+
+&lt;/pre&gt;
+&lt;pre class='julia-code' style='display:block; background:#f4f6f8; border:1px solid #c0c8d0; border-radius:4px; padding:10px; margin-top:10px; margin-bottom:0; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#333;'&gt;
+&lt;span style='color:#28a745; font-weight:bold;'&gt;julia&amp;gt; &lt;/span&gt;&lt;span style='color:#008b8b;'&gt;println(gt)&lt;/span&gt;
+&lt;/pre&gt;
+&lt;pre class='julia-output' style='display:block; background:#ffffff; border:none; padding:10px 10px 10px 20px; margin-top:0; margin-bottom:15px; font-family:"Lucida Console", Consolas, monospace; font-size:0.9em; white-space:pre-wrap; color:#000;'&gt;
+2×5 GeoTable over 2 PointSet
+
+&lt;/pre&gt;</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="entregables-y-criterios-de-evaluación" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Entregables y Criterios de Evaluación</h1>
+<pre><code>**Sobre la Topología (Ejercicio 1):** Basado en la lectura y tu experiencia práctica, ¿por qué es crítico respetar el orden matemático (X, Y) o (Longitud, Latitud) al momento de construir un Point o LineString en lugar de usar el orden verbal cotidiano “Latitud, Longitud”?</code></pre>
+<p>Es importante respetar el orden (Longitud, Latitud) porque las libreiras y el tipo de formato utilizado, operan sobre un plano cartesiano, es decir coordenadas (X,Y). Si se interpretara cómo suele mencionarse las coordenadas, (Latitud, Longitud) otra manera, el lenguaje interpretaria la Latitud como Longitud y viceversa por lo que el punto estaría ubicado en un lugar completamente distinto al que se esperaria.</p>
+<p>Además, X, es el eje horizontal, que corresponde a la longitud que va de este a oeste, mientras que Y es el eje vertical, que corresponde a la latitud que va de norte a sur. Si se invierte el orden, se estaría asignando la latitud al eje X y la longitud al eje Y, lo que resultaría en una ubicación geográfica incorrecta.</p>
+<pre><code>**Sobre la Proyección:** El texto de la lección hace una advertencia sobre calcular áreas usando el EPSG:4326 (Grados). Explica con tus palabras por qué medir un área en “grados cuadrados” carece de utilidad práctica en la ingeniería o el planeamiento territorial en Colombia, y por qué el EPSG:9377 soluciona esto.</code></pre>
+<p>Porque no es una medida que permita determinar distancias, las coordenadas de referencia en formato EPSG:4326, al encontrarse en grados no permite tener un dato de distancia entre dos puntos, sino que al ser una medida que corresponde a una unidad que calcula el ángulo de un vértica entre el centro y sus lados, el resultado sería un ángulo, no una distancia. Por otra parte, el formato EPSG:9377 (Magna-Sirgas/Origen Nacional), es un sistema de coordenadas proyectado que utiliza metros como unidad de medida, lo que permite calcular áreas y distancias de manera precisa y útil para la ingeniería y el planeamiento territorial en Colombia.</p>
+</section>
+<section id="referencias" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Referencias</h1>
+<p>Rodríguez-Avellaneda, A. H. (2026). Programación en SIG: R, Python y Julia [Material de curso]. Maestría en Geomática, Universidad Nacional de Colombia. Recuperado de https://github.com/alexyshr/ProgramacionSIG2026</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
