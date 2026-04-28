@@ -22,7 +22,7 @@ format:
 
 ```{r}
 # #| include: false
-source("/home/rstudio/work/ejercicios/datos_geoespaciales/j_eval_j_plot-previa4.r")
+source("j_eval_j_plot-previa4.r")
 ```
 
 Los siguientes ejercicios fueron desarrollados en base al capítulo Estructura de Datos Geoespaciales del curso Programación en SIG: R, Python y Julia, creado por el docente Rodriguez-Avellaneda, 2026. El objetivo es que puedas practicar la creación de objetos geométricos básicos (Puntos, Líneas, Polígonos) y la conversión de tablas planas a tablas espaciales con un sistema de referencia.
@@ -39,6 +39,7 @@ Instrucciones de código:
     4. Imprime el tipo de geometría (o la representación en texto/WKT) de tu variable tramo_cauca.
 
 ## Lenguaje Python
+
 ```{python}
 import geopandas as gpd
 from shapely.geometry import Point, LineString
@@ -70,6 +71,8 @@ print(paste("Representación WKT:", st_as_text(tramo_cauca)))
 ## Lenguaje Julia
 
 ```{r}
+#| results: asis
+
 j_eval(r"-(
 
 using LibGEOS
@@ -145,6 +148,8 @@ print(gdf)
 ## Lenguaje Julia
 
 ```{r}
+#| results: asis
+
 j_eval(r"-(
 
 using DataFrames, GeoTables, Meshes
